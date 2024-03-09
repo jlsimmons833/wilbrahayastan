@@ -12,7 +12,7 @@ namespace DotNetCoreSqlDb.Models
         public string? Author { get; set; }
 
 
-        [DisplayName("Title")]
+        [DisplayName("Created Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime CreatedDate { get; set; }

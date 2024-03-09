@@ -17,7 +17,7 @@ namespace DotNetCoreSqlDb.Controllers
     {
         private readonly MyDatabaseContext _context;
         private readonly IDistributedCache _cache;
-        private readonly string _BlogPostsCacheKey = "BlogPostList";
+        private readonly string _BlogPostsCacheKey = "BlogPostsList";
 
         public BlogPostController(MyDatabaseContext context, IDistributedCache cache)
         {
@@ -29,18 +29,18 @@ namespace DotNetCoreSqlDb.Controllers
         public async Task<IActionResult> Index()
         {
             var blogs = new List<Blog>();
-            byte[]? BlogListByteArray;
+            byte[]? BlogPostsByteArray;
 
-            BlogListByteArray = await _cache.GetAsync(_BlogPostsCacheKey);
-            if (BlogListByteArray != null && BlogListByteArray.Length > 0)
+            BlogPostsByteArray = await _cache.GetAsync(_BlogPostsCacheKey);
+            if (BlogPostsByteArray != null && BlogPostsByteArray.Length > 0)
             { 
-                blogs = ConvertData<Blog>.ByteArrayToObjectList(BlogListByteArray);
+                blogs = ConvertData<Blog>.ByteArrayToObjectList(BlogPostsByteArray);
             }
             else 
             {
                 blogs = await _context.Blog.ToListAsync();
-                BlogListByteArray = ConvertData<Blog>.ObjectListToByteArray(blogs);
-                await _cache.SetAsync(_BlogPostsCacheKey, BlogListByteArray);
+                BlogPostsByteArray = ConvertData<Blog>.ObjectListToByteArray(blogs);
+                await _cache.SetAsync(_BlogPostsCacheKey, BlogPostsByteArray);
             }
 
             return View(blogs);
