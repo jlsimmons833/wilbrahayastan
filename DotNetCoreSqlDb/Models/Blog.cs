@@ -5,6 +5,7 @@ namespace DotNetCoreSqlDb.Models
 {
     public class Blog
     {
+        [Key]
         public int PostID { get; set; }
         public string? Title { get; set; }
         public string? Content { get; set; }
