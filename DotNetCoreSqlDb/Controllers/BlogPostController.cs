@@ -25,7 +25,7 @@ namespace DotNetCoreSqlDb.Controllers
             _cache = cache;
         }
 
-        // GET: Todos
+        // GET: Blogs
         public async Task<IActionResult> Index()
         {
             var blogs = new List<Blog>();
@@ -57,7 +57,7 @@ namespace DotNetCoreSqlDb.Controllers
                 return NotFound();
             }
 
-            blogItemByteArray = await _cache.GetAsync(GetTodoItemCacheKey(id));
+            blogItemByteArray = await _cache.GetAsync(GetBlogPostsCacheKey(id));
 
             if (blogItemByteArray != null && blogItemByteArray.Length > 0)
             {
@@ -66,14 +66,14 @@ namespace DotNetCoreSqlDb.Controllers
             else 
             {
                 blog = await _context.Blog
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.PostID == id);
             if (blog == null)
             {
                 return NotFound();
             }
 
                 blogItemByteArray = ConvertData<Blog>.ObjectToByteArray(blog);
-                await _cache.SetAsync(GetBlogPostseKey(id), blogItemByteArray);
+                await _cache.SetAsync(GetBlogPostsCacheKey(id), blogItemByteArray);
             }
 
             
@@ -104,7 +104,7 @@ namespace DotNetCoreSqlDb.Controllers
             return View(blog);
         }
 
-        // GET: Todos/Edit/5
+        // GET: Blog/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -127,24 +127,18 @@ namespace DotNetCoreSqlDb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,Author,CreatedDate")] Blog blog)
         {
-            var todo = await _context.Todo.FindAsync(id);
-            if (id != blog.ID)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(blog);
                     await _context.SaveChangesAsync();
-                    await _cache.RemoveAsync(GetTodoItemCacheKey(blog.ID));
+                    await _cache.RemoveAsync(GetBlogPostsCacheKey(blog.PostID));
                     await _cache.RemoveAsync(_BlogPostsCacheKey);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BlogExists(blog.ID))
+                    if (!BlogExists(blog.PostID))
                     {
                         return NotFound();
                     }
@@ -167,7 +161,7 @@ namespace DotNetCoreSqlDb.Controllers
             }
 
             var blog = await _context.Blog
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.PostID == id);
             if (blog == null)
             {
                 return NotFound();
@@ -184,9 +178,9 @@ namespace DotNetCoreSqlDb.Controllers
             var blog = await _context.Blog.FindAsync(id);
             if (blog != null)
             {
-                _context.Todo.Remove(blog);
+                _context.Blog.Remove(blog);
                 await _context.SaveChangesAsync();
-                await _cache.RemoveAsync(GetTodoItemCacheKey(blog.ID));
+                await _cache.RemoveAsync(GetBlogPostsCacheKey(blog.PostID));
                 await _cache.RemoveAsync(_BlogPostsCacheKey);
             }
             return RedirectToAction(nameof(Index));
@@ -194,10 +188,10 @@ namespace DotNetCoreSqlDb.Controllers
 
         private bool BlogExists(int id)
         {
-            return _context.Blog.Any(e => e.ID == id);
+            return _context.Blog.Any(e => e.PostID == id);
         }
 
-        private string GetTodoItemCacheKey(int? id)
+        private string GetBlogPostsCacheKey(int? id)
         {
             return _BlogPostsCacheKey+"_&_"+id;
         }
