@@ -39,6 +39,9 @@ namespace DotNetCoreSqlDb.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(50)");
+                        
                     b.HasKey("ID");
 
                     b.ToTable("Todo");
