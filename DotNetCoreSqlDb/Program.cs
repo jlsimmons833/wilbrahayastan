@@ -38,6 +38,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=BlogPost}/{action=Index}/{id?}");
+    pattern: "{controller=Todos}/{action=Index}/{id?}");
 
 app.Run();
